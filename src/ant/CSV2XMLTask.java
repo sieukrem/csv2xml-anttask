@@ -50,7 +50,6 @@ public class CSV2XMLTask  extends Task {
 
     		if (names!=null && names.length>0){
     			result = names[0];
-        		log("mapper");
         		break;
     		}
     	}
@@ -66,24 +65,18 @@ public class CSV2XMLTask  extends Task {
     private void fillXML(Document d, CSVReader r) throws IOException
     {
 	      Node csv = d.createElement("csv");
-	      log("vor row");
 	      d.appendChild(csv);
 
-	      log("vor row");
-	      
 	      String[] line = r.readNext();
 	      
 	      while(line!=null){
-    	      log("vor row");
 		      Node row = d.createElement("row");
 		      for(int i=0, c=line.length; i<c;i++)
 		      {
-	    	      log("vor cell");
 			      Node cell = d.createElement("c"+Integer.toString(i));
 		    	  cell.setTextContent(line[i]);
 		    	  row.appendChild(cell);
 		      }
-    	      log("vor csv");
 		      csv.appendChild(row);
 		      line = r.readNext();
 	      }
@@ -107,7 +100,6 @@ public class CSV2XMLTask  extends Task {
 	        	      DocumentBuilder builder  = factory.newDocumentBuilder();
 	        	      Document        document = builder.newDocument();
 	        	      fillXML(document, reader);
-	        	      log("nach fill");
 	        	      // ---- Use a XSLT transformer for writing the new XML file ----
 	        	      Transformer transformer = TransformerFactory.newInstance().newTransformer();
 	        	      DOMSource        source = new DOMSource( document );
