@@ -37,6 +37,16 @@ public class CSV2XMLTask  extends Task {
     }
 
     private Vector<Mapper> fmappers = new Vector<Mapper>();
+	private String inencoding = "utf-8";
+	private String outencoding = "utf-8";
+	
+	public void setInEncoding(String str){
+		inencoding = str;
+	}
+	public void setOutEncoding(String str){
+		outencoding = str;
+	}
+	
     public void addMapper(Mapper mapper) {
     	fmappers.add(mapper);
     }
@@ -90,11 +100,20 @@ public class CSV2XMLTask  extends Task {
             
             for(int i=0; i<includedFiles.length; i++) {
                 String filename = includedFiles[i];           // 4
+                log("Convert file: "+filename);
+                
                 String outputfile = getOutputFilename(filename);
+                log("To: "+outputfile);
+                
                 outputfile = (fdest!=null && fdest.length()>0)? fdest + File.separatorChar + outputfile : outputfile;
                 CSVReader reader = null;
                 try {
-					 reader = new CSVReader(new FileReader(ds.getBasedir().getPath() + File.separatorChar+ filename), fdelim);
+                	 FileInputStream fis = new FileInputStream(ds.getBasedir().getPath() + File.separatorChar+ filename);
+                	 InputStreamReader isr = new InputStreamReader(fis, inencoding);
+                	 
+                	 log("Encoding: "+isr.getEncoding());
+                	 
+					 reader = new CSVReader(isr, fdelim);
 	        	      // ---- Parse XML file ----
 	        	      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	        	      DocumentBuilder builder  = factory.newDocumentBuilder();
@@ -105,7 +124,11 @@ public class CSV2XMLTask  extends Task {
 	        	      DOMSource        source = new DOMSource( document );
 	        	      FileOutputStream os     = new FileOutputStream( new File(outputfile) );
 	        	      StreamResult     result = new StreamResult( os );
+
+	        	      transformer.setOutputProperty(javax.xml.transform.OutputKeys.ENCODING, outencoding);
+	        	      
 	        	      transformer.transform( source, result );
+	        	      
 	
 	        	      // ---- Error handling ----
         	    } catch( TransformerConfigurationException tce ) {
